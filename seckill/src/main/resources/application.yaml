@@ -8,3 +8,34 @@ spring:
     mode: HTML5
     prefix: classpath:/templates/
     suffix: .html
+
+# config mybatis (http://www.mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/index.html)
+mybatis:
+    type-aliases-package: guo.ping.seckill.model
+    configuration:
+        map-underscore-to-camel-case: true
+        default-fetch-size: 100
+        default-statement-timeout: 3000
+    mapper-locations: classpath:guo/ping/seckill/dao/*xml
+
+# config druid (https://github.com/alibaba/druid/tree/master/druid-spring-boot-starter)
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://192.168.2.113:3306/miaosha?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8 # 或spring.datasource.url=
+      username: root # 或spring.datasource.username=
+      password: 1234 # 或spring.datasource.password=
+      driver-class-name: com.mysql.jdbc.Driver #或 spring.datasource.driver-class-name=
+      initial-size: 1
+      max-active: 2
+      min-idle: 1
+      max-wait: 60000
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+      validation-query: select 'x'
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      filters: stat #配置多个英文逗号分隔
