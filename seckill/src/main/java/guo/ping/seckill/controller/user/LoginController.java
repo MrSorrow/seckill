@@ -1,9 +1,12 @@
 package guo.ping.seckill.controller.user;
 
+import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.result.ServerResponse;
+import guo.ping.seckill.service.UserService;
 import guo.ping.seckill.vo.LoginInfoVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +24,9 @@ public class LoginController {
 
     private Logger logger = LoggerFactory.getLogger(LoginController.class);
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping("/login")
     public String login() {
         return "login";
@@ -31,8 +37,12 @@ public class LoginController {
     public ServerResponse<Boolean> doLogin(LoginInfoVo loginInfoVo) {
         // 打印用户输入信息日志
         logger.info(loginInfoVo.toString());
-        System.out.println(loginInfoVo.toString());
-        return null;
+        // 登录
+        CodeMsg codeMsg = userService.login(loginInfoVo);
+        if (codeMsg.equals(CodeMsg.SUCCESS)) {
+            return ServerResponse.success(true);
+        }
+        return ServerResponse.error(codeMsg);
     }
 
 

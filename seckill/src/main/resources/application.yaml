@@ -43,7 +43,7 @@ spring:
 
 # config mybatis (http://www.mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/index.html)
 mybatis:
-    type-aliases-package: guo.ping.seckill.model
+    type-aliases-package: guo.ping.seckill.domainn
     configuration:
         map-underscore-to-camel-case: true
         default-fetch-size: 100

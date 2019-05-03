@@ -57,6 +57,6 @@ public class MD5Util {
     }
 
     public static void main(String[] args) {
-        System.out.println(userPasswordToDBPassword("11234355673", "dadad"));
+        System.out.println(userPasswordToDBPassword("123456", "qwhqui"));
     }
 }
