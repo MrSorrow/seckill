@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
+
 /**
  * @description: 用户登录Controller
  * @author: guoping wang
@@ -34,7 +36,7 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public ServerResponse<Boolean> doLogin(LoginInfoVo loginInfoVo) {
+    public ServerResponse<Boolean> doLogin(@Valid LoginInfoVo loginInfoVo) {
         // 打印用户输入信息日志
         logger.info(loginInfoVo.toString());
         // 登录
