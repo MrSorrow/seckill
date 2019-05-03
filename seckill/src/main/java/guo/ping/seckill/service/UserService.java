@@ -8,6 +8,9 @@ import guo.ping.seckill.vo.LoginInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.Random;
+
 /**
  * @description: 用户Service
  * @author: guoping wang
@@ -25,6 +28,11 @@ public class UserService {
         return userDao.getUserById(id);
     }
 
+    /**
+     * 登录服务，包含第二次MD5加密的逻辑
+     * @param loginInfoVo
+     * @return
+     */
     public CodeMsg login(LoginInfoVo loginInfoVo) {
         String mobile = loginInfoVo.getMobile();
         String formPassword = loginInfoVo.getPassword();
@@ -39,6 +47,29 @@ public class UserService {
         String dbPassword = MD5Util.formPasswordToDBPassword(formPassword, salt);
         if (!user.getPassword().equals(dbPassword)) {
             return CodeMsg.PASSWORD_ERROR;
+        }
+        return CodeMsg.SUCCESS;
+    }
+
+    /**
+     * 批量注册用户功能，用于JMeter的压测
+     * @param num 批量数量
+     * @return
+     */
+    public CodeMsg batchRegister(Integer num) {
+        if (num < 1) {
+            return CodeMsg.REGISTER_BATCH;
+        }
+        for (int i = 0; i < num; i++) {
+            User user = new User();
+            user.setId(12320890318L + i);
+            user.setNickname("user" + i);
+            user.setPassword("password" + i);
+            user.setSalt("salt" + i);
+            user.setRegisterDate(new Date());
+            user.setLastLoginDate(new Date());
+            user.setLoginCount(0);
+            userDao.insert(user);
         }
         return CodeMsg.SUCCESS;
     }

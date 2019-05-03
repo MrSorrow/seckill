@@ -1,6 +1,7 @@
 package guo.ping.seckill.dao;
 
 import guo.ping.seckill.domain.User;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -24,4 +25,6 @@ public interface UserDao {
     public User getUserById(@Param("id") Long id);
 
 
+    @Insert("INSERT INTO miaosha_user VALUES (#{id}, #{nickname}, #{password}, #{salt}, #{head}, #{registerDate}, #{lastLoginDate}, #{loginCount})")
+    public void insert(User user);
 }

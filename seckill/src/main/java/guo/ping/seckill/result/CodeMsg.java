@@ -16,7 +16,7 @@ public class CodeMsg {
     public static final CodeMsg SERVER_ERROR = new CodeMsg(500100,"服务端异常");
 
     /**
-     * 登录模块5002XX
+     * 用户模块5002XX
      */
     public static final CodeMsg SESSION_ERROR = new CodeMsg(500210,"Session不存在或已经失效");
     public static final CodeMsg PASSWORD_EMPTY = new CodeMsg(500211,"密码不能为空");
@@ -24,6 +24,7 @@ public class CodeMsg {
     public static final CodeMsg MOBILE_ERROR = new CodeMsg(500213, "手机号格式错误");
     public static final CodeMsg MOBILE_NOT_EXIST = new CodeMsg(500214, "手机号不存在");
     public static final CodeMsg PASSWORD_ERROR = new CodeMsg(500215, "密码错误");
+    public static final CodeMsg REGISTER_BATCH = new CodeMsg(500216, "批量数量设置错误");
 
     /**
      * 商品模块5003XX

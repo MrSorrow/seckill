@@ -39,7 +39,7 @@ public class LoginController {
         logger.info(loginInfoVo.toString());
         // 登录
         CodeMsg codeMsg = userService.login(loginInfoVo);
-        if (codeMsg.equals(CodeMsg.SUCCESS)) {
+        if (CodeMsg.SUCCESS.getCode() == codeMsg.getCode()) {
             return ServerResponse.success(true);
         }
         return ServerResponse.error(codeMsg);
