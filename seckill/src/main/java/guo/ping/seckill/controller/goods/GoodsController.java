@@ -27,21 +27,11 @@ public class GoodsController {
     /**
      * 展示商品列表
      * @param model 将信息加入model用于页面展示
-     * @param cookieToken 从cookie中取出数据
-     * @param paramToken 从请求参数中取出数据
+     * @param user 通过UserArgumentResolver解析参数token获取user对象
      * @return
      */
     @RequestMapping("/list")
-    public String goodsList(Model model,
-                            @CookieValue(value = UserService.COOKIE_TOKEN_NAME, required = false) String cookieToken,
-                            @RequestParam(value = UserService.COOKIE_TOKEN_NAME, required = false) String paramToken) {
-        if (StringUtils.isEmpty(cookieToken) && StringUtils.isEmpty(paramToken)) {
-            return "login";
-        }
-        // 优先从参数中获取用户token
-        String token = StringUtils.isEmpty(paramToken) ? cookieToken : paramToken;
-        // 根据Token查询User
-        User user = userService.getUserByToken(token);
+    public String goodsList(Model model, User user) {
         model.addAttribute("user", user);
         return "goods_list";
     }
