@@ -14,6 +14,7 @@ public class CodeMsg {
      */
     public static final CodeMsg SUCCESS = new CodeMsg(0,"success");
     public static final CodeMsg SERVER_ERROR = new CodeMsg(500100,"服务端异常");
+    public static final CodeMsg BIND_ERROR = new CodeMsg(500101,"参数校验异常: %s");
 
     /**
      * 用户模块5002XX
@@ -56,5 +57,15 @@ public class CodeMsg {
 
     public String getMsg() {
         return msg;
+    }
+
+    /**
+     * 用于参数校验错误信息的拼接
+     * @param args 错误信息拼接
+     * @return
+     */
+    public CodeMsg fillMsg(Object... args) {
+        msg = String.format(msg, args);
+        return this;
     }
 }
