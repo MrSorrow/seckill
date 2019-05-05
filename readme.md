@@ -1,6 +1,10 @@
 # 电商秒杀系统
+
+![](https://img.shields.io/badge/Java-1.8-blue.svg) ![](https://img.shields.io/badge/Spring&nbsp;Boot-2.1.3&nbsp;Release-blue.svg) ![](https://img.shields.io/badge/Redis-3.2-blue.svg) ![](https://img.shields.io/badge/MySQL-5.7.23-blue.svg) ![](https://img.shields.io/badge/Druid-1.1.10-blue.svg) ![](https://img.shields.io/badge/Thymeleaf-3.0.11-blue.svg)
+
 本项目实现了电商项目的秒杀功能，主要内容包含了用户登录、浏览商品、秒杀抢购、创建订单等功能，着重解决秒杀系统的并发问题。项目利用JMeter工具进行压力测试，着重对比采用缓存、消息队列等手段对于提高系统响应速度并发能力的效果。
 
+项目视频参考地址：[https://www.bilibili.com/video/av50818180/](https://www.bilibili.com/video/av50818180/)
 
 ## 一、登录模块
 
