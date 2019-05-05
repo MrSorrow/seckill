@@ -2,6 +2,8 @@ package guo.ping.seckill.exception;
 
 import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.result.ServerResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,8 +22,13 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(Exception.class)
     public ServerResponse<CodeMsg> exceptionHandler(HttpServletRequest request, Exception e) {
+        // 打印log
+        logger.error(e.getMessage());
+
         // 参数校验异常
         if (e instanceof BindException) {
             BindException bindException = (BindException) e;

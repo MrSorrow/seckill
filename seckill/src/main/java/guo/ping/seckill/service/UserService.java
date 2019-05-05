@@ -3,14 +3,19 @@ package guo.ping.seckill.service;
 import guo.ping.seckill.dao.UserDao;
 import guo.ping.seckill.domain.User;
 import guo.ping.seckill.exception.GlobalException;
+import guo.ping.seckill.redis.UserKey;
 import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.utils.MD5Util;
+import guo.ping.seckill.utils.UUIDUtil;
 import guo.ping.seckill.vo.LoginInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description: 用户Service
@@ -22,8 +27,12 @@ import java.util.Random;
 @Service
 public class UserService {
 
+    private static final String COOKIE_TOKEN_NAME = "TOKEN";
+
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     public User getUserById(Long id) {
         return userDao.getUserById(id);
@@ -34,7 +43,7 @@ public class UserService {
      * @param loginInfoVo
      * @return
      */
-    public CodeMsg login(LoginInfoVo loginInfoVo) {
+    public CodeMsg login(HttpServletResponse response, LoginInfoVo loginInfoVo) {
         if (loginInfoVo == null) {
             throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
@@ -53,6 +62,18 @@ public class UserService {
         if (!user.getPassword().equals(dbPassword)) {
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
+
+        // 用户输入信息正确后，在Redis中保存Session信息，浏览器保存Cookie
+        String token = UUIDUtil.uuid();
+        String key = UserKey.userKey.getPrefix() + ":" + token;
+        int expire = UserKey.userKey.expireSeconds();
+        redisTemplate.opsForValue().set(key, user);
+        redisTemplate.expire(key, expire, TimeUnit.MILLISECONDS);
+
+        Cookie cookie = new Cookie(COOKIE_TOKEN_NAME, token);
+        cookie.setMaxAge(expire);
+        cookie.setPath("/");
+        response.addCookie(cookie);
         return CodeMsg.SUCCESS;
     }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -36,11 +37,11 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public ServerResponse<Boolean> doLogin(@Valid LoginInfoVo loginInfoVo) {
+    public ServerResponse<Boolean> doLogin(HttpServletResponse response, @Valid LoginInfoVo loginInfoVo) {
         // 打印用户输入信息日志
         logger.info(loginInfoVo.toString());
         // 登录，出错会抛出全局异常，并被捕获处理
-        userService.login(loginInfoVo);
+        userService.login(response, loginInfoVo);
         // 直接返回true即可
         return ServerResponse.success(true);
     }
