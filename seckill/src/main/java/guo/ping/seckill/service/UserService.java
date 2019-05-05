@@ -8,6 +8,7 @@ import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.utils.MD5Util;
 import guo.ping.seckill.utils.UUIDUtil;
 import guo.ping.seckill.vo.LoginInfoVo;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UserService {
 
-    private static final String COOKIE_TOKEN_NAME = "TOKEN";
+    public static final String COOKIE_TOKEN_NAME = "TOKEN";
 
     @Autowired
     private UserDao userDao;
@@ -64,17 +65,27 @@ public class UserService {
         }
 
         // 用户输入信息正确后，在Redis中保存Session信息，浏览器保存Cookie
+        addCookie(response, user);
+
+        return CodeMsg.SUCCESS;
+    }
+
+    /**
+     * 在Redis中保存Session信息，浏览器保存Cookie
+     * @param response
+     * @param user
+     */
+    private void addCookie(HttpServletResponse response, User user) {
         String token = UUIDUtil.uuid();
         String key = UserKey.userKey.getPrefix() + ":" + token;
         int expire = UserKey.userKey.expireSeconds();
         redisTemplate.opsForValue().set(key, user);
-        redisTemplate.expire(key, expire, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(key, expire, TimeUnit.SECONDS);
 
         Cookie cookie = new Cookie(COOKIE_TOKEN_NAME, token);
         cookie.setMaxAge(expire);
         cookie.setPath("/");
         response.addCookie(cookie);
-        return CodeMsg.SUCCESS;
     }
 
     /**
@@ -98,5 +109,21 @@ public class UserService {
             userDao.insert(user);
         }
         return CodeMsg.SUCCESS;
+    }
+
+    /**
+     * 根据Token查询用户信息
+     * @param token
+     * @return
+     */
+    public User getUserByToken(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+        String key = UserKey.userKey.getPrefix() + ":" + token;
+        int expire = UserKey.userKey.expireSeconds();
+        // 更新用户Session有效期，如果key不存在，并不会在redis新生成key
+        redisTemplate.expire(key, expire, TimeUnit.SECONDS);
+        return (User) redisTemplate.opsForValue().get(key);
     }
 }
