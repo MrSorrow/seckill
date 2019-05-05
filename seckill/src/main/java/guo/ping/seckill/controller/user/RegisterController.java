@@ -1,6 +1,5 @@
 package guo.ping.seckill.controller.user;
 
-import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.result.ServerResponse;
 import guo.ping.seckill.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +25,7 @@ public class RegisterController {
     @RequestMapping("/batch_register/{num}")
     @ResponseBody
     public ServerResponse<Boolean> batchRegister(@PathVariable("num") Integer num) {
-        CodeMsg codeMsg = userService.batchRegister(num);
-        if (CodeMsg.SUCCESS.getCode() == codeMsg.getCode()) {
-            return ServerResponse.success(true);
-        }
-        return ServerResponse.error(codeMsg);
+        userService.batchRegister(num);
+        return ServerResponse.success(true);
     }
 }

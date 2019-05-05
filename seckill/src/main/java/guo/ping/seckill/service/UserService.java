@@ -2,6 +2,7 @@ package guo.ping.seckill.service;
 
 import guo.ping.seckill.dao.UserDao;
 import guo.ping.seckill.domain.User;
+import guo.ping.seckill.exception.GlobalException;
 import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.utils.MD5Util;
 import guo.ping.seckill.vo.LoginInfoVo;
@@ -34,19 +35,23 @@ public class UserService {
      * @return
      */
     public CodeMsg login(LoginInfoVo loginInfoVo) {
+        if (loginInfoVo == null) {
+            throw new GlobalException(CodeMsg.SERVER_ERROR);
+        }
+
         String mobile = loginInfoVo.getMobile();
         String formPassword = loginInfoVo.getPassword();
 
         User user = userDao.getUserById(Long.parseLong(mobile));
         if (user == null) {
-            return CodeMsg.MOBILE_NOT_EXIST;
+            throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
         }
 
         // 验证密码，二次MD5加密验证
         String salt = user.getSalt();
         String dbPassword = MD5Util.formPasswordToDBPassword(formPassword, salt);
         if (!user.getPassword().equals(dbPassword)) {
-            return CodeMsg.PASSWORD_ERROR;
+            throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
         return CodeMsg.SUCCESS;
     }
@@ -58,7 +63,7 @@ public class UserService {
      */
     public CodeMsg batchRegister(Integer num) {
         if (num < 1) {
-            return CodeMsg.REGISTER_BATCH;
+            throw new GlobalException(CodeMsg.REGISTER_BATCH);
         }
         for (int i = 0; i < num; i++) {
             User user = new User();

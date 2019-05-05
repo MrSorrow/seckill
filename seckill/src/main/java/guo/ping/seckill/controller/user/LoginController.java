@@ -39,12 +39,10 @@ public class LoginController {
     public ServerResponse<Boolean> doLogin(@Valid LoginInfoVo loginInfoVo) {
         // 打印用户输入信息日志
         logger.info(loginInfoVo.toString());
-        // 登录
-        CodeMsg codeMsg = userService.login(loginInfoVo);
-        if (CodeMsg.SUCCESS.getCode() == codeMsg.getCode()) {
-            return ServerResponse.success(true);
-        }
-        return ServerResponse.error(codeMsg);
+        // 登录，出错会抛出全局异常，并被捕获处理
+        userService.login(loginInfoVo);
+        // 直接返回true即可
+        return ServerResponse.success(true);
     }
 
 
