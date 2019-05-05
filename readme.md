@@ -24,6 +24,15 @@ CREATE TABLE miaosha_user (
 2. MD5的密码传输至服务端时，需要随机生成salt进行二次MD5，保存salt和两次MD5结果至数据库中。
 
 #### 「分布式Session」
+1. UUID方式生成Token，Redis保存Token-User的键值信息模拟Session;
+2. 将Token写到Cookie中，设置Path为顶级域名之下。
+
+#### 「注册登录功能实现」
+1. 封装服务端响应对象 `guo.ping.seckill.result.ServerResponse` 以及状态码消息对象 `guo.ping.seckill.result.CodeMsg`;
+2. 利用JSR-303注解校验参数，并自定义手机号校验注解 `guo.ping.seckill.validator.IsMobile` 以及验证器 `guo.ping.seckill.validator.IsMobileValidator`;
+3. 实现用户登录，批量注册用户逻辑;
+4. 自定义方法参数解析器用于获取请求中包含的Token值，并查询Redis封装成User;
+5. 具体代码参考 [<u>Commits on May 3, 2019</u> 和 <u>Commits on May 5, 2019</u>](https://github.com/MrSorrow/seckill/commits/master)
 
 
 
