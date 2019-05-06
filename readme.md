@@ -20,7 +20,7 @@
     ```
 
 ## 二、功能实现
-### 用户模块
+### I. 用户模块
 
 #### 「建立用户表」
 
@@ -53,7 +53,7 @@ CREATE TABLE miaosha_user (
 5. 具体代码参考 [<u>Commits on May 3, 2019</u> 和 <u>Commits on May 5, 2019</u>](https://github.com/MrSorrow/seckill/commits/master)
 
 
-### 商品模块
+### II. 商品模块
 
 #### 「建立商品与订单表」
 1. 数据库表包含普通商品表、普通订单表，以及专门用于秒杀商品的秒杀商品表和秒杀订单表;

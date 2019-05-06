@@ -40,7 +40,8 @@ public class CodeMsg {
     /**
      * 秒杀模块5005XX
      */
-    public static final CodeMsg SECKILL_ERROR = new CodeMsg(500501,"服务端异常");
+    public static final CodeMsg SECKILL_OVER = new CodeMsg(500501,"秒杀结束");
+    public static final CodeMsg SECKILL_REPEAT = new CodeMsg(500502, "不能重复秒杀");
 
     private int code;
     private String msg;
