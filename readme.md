@@ -6,7 +6,7 @@
 
 项目视频参考地址：[https://www.bilibili.com/video/av50818180/](https://www.bilibili.com/video/av50818180/)
 
-## 零、环境准备
+## 一、环境准备
 1. 安装Docker;
 2. 安装MySQL的Docker环境 (注意设置容器时区和MySQL时区);
     ```bash
@@ -19,7 +19,8 @@
     docker run -d -p 6379:6379 --name e3-mall-redis redis:3.2
     ```
 
-## 一、用户模块
+## 二、功能实现
+### 用户模块
 
 #### 「建立用户表」
 
@@ -52,7 +53,7 @@ CREATE TABLE miaosha_user (
 5. 具体代码参考 [<u>Commits on May 3, 2019</u> 和 <u>Commits on May 5, 2019</u>](https://github.com/MrSorrow/seckill/commits/master)
 
 
-## 二、商品模块
+### 商品模块
 
 #### 「建立商品与订单表」
 1. 数据库表包含普通商品表、普通订单表，以及专门用于秒杀商品的秒杀商品表和秒杀订单表;
