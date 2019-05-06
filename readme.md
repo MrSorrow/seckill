@@ -6,6 +6,19 @@
 
 项目视频参考地址：[https://www.bilibili.com/video/av50818180/](https://www.bilibili.com/video/av50818180/)
 
+## 零、环境准备
+1. 安装Docker;
+2. 安装MySQL的Docker环境 (注意设置容器时区和MySQL时区);
+    ```bash
+    docker pull mysql:5.7.23
+    docker run --name e3-mall-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=1234 -e TZ=Asia/Shanghai -d mysql:5.7.23 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time_zone='+8:00'
+    ```
+3. 安装Redis的Docker环境;
+    ```bash
+    docker pull redis:3.2
+    docker run -d -p 6379:6379 --name e3-mall-redis redis:3.2
+    ```
+
 ## 一、用户模块
 
 #### 「建立用户表」

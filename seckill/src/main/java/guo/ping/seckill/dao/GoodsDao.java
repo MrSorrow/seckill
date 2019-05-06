@@ -20,6 +20,6 @@ public interface GoodsDao {
     @Select("SELECT g.*, mg.miaosha_price, mg.stock_count, mg.start_date, mg.end_date FROM goods g RIGHT JOIN miaosha_goods mg ON g.id = mg.goods_id")
     List<GoodsVO> getGoodsVOs();
 
-    @Select("SELECT g.*, mg.miaosha_price, mg.stock_count, mg.start_date, mg.end_date FROM goods g RIGHT JOIN miaosha_goods mg ON g.id = mg.goods_id WHERE g.id = #{goodsId}")
+    @Select("SELECT g.*, mg.miaosha_price, mg.stock_count, mg.start_date, mg.end_date FROM goods g INNER JOIN miaosha_goods mg ON g.id = mg.goods_id AND g.id = #{goodsId}")
     GoodsVO getGoodsDetailById(@Param("goodsId") Long goodsId);
 }
