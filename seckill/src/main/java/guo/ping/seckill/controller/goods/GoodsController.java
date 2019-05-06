@@ -7,6 +7,7 @@ import guo.ping.seckill.vo.GoodsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -39,5 +40,46 @@ public class GoodsController {
         List<GoodsVO> goods = goodsService.getGoodsVOs();
         model.addAttribute("goodsList", goods);
         return "goods_list";
+    }
+
+    /**
+     * 展示商品详情页面
+     * @param model
+     * @param user
+     * @return
+     */
+    @RequestMapping("/detail/{goodsId}")
+    public String goodsDetail(Model model, User user, @PathVariable("goodsId") Long goodsId) {
+        model.addAttribute("user", user);
+
+        GoodsVO goodsVO = goodsService.getGoodsDetailById(goodsId);
+        model.addAttribute("goods", goodsVO);
+
+        Long startTime = goodsVO.getStartDate().getTime();
+        Long endTime = goodsVO.getEndDate().getTime();
+        Long now = System.currentTimeMillis();
+
+        // 记录秒杀状态 0-未开始 1-正在进行 2-已结束
+        int secKillStatus = 0;
+        long remainSeconds = 0;
+
+        // 秒杀未开始
+        if (now < startTime) {
+            secKillStatus = 0;
+            remainSeconds = (startTime - now) / 1000;
+        }
+        // 秒杀已结束
+        else if (now > endTime) {
+            secKillStatus = 2;
+            remainSeconds = -1;
+        }
+        // 秒杀正在进行
+        else {
+            secKillStatus = 1;
+            remainSeconds = 0;
+        }
+        model.addAttribute("secKillStatus", secKillStatus);
+        model.addAttribute("remainSeconds", remainSeconds);
+        return "goods_detail";
     }
 }
