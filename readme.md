@@ -91,3 +91,12 @@ CREATE TABLE miaosha_user (
         goods_id BIGINT(20) DEFAULT NULL COMMENT "商品id"
     ) ENGINE=INNODB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
     ```
+6. 插入数据：
+    ```sql
+    INSERT INTO goods VALUES (1, "iPhoneX", "Apple iPhone X (A1865) 64GB 深空灰色 移动联通电信4G手机", "/img/iphonex.png", "Apple iPhone X (A1865) 64GB 深空灰色 移动联通电信4G手机【五月特惠】大屏性价比iPhone7Plus4199元，iPhone8低至3499元，iPhoneXR低至4799元！更多特价、优惠券，点此查看！选移动，享大流量，不换号购机！", 5999, 100);
+    INSERT INTO goods VALUES (2, "华为 P30", "华为 HUAWEI P30 Pro 超感光徕卡四摄10倍混合变焦麒麟980芯片屏内指纹", "/img/p30.png", "华为 HUAWEI P30 Pro 超感光徕卡四摄10倍混合变焦麒麟980芯片屏内指纹 8GB+256GB极光色全网通版双4G手机！", 5988, 55);   
+ 
+    INSERT INTO miaosha_goods VALUES (1, 1, 0.01, 4, NOW(), NOW()), (2, 2, 0.01, 9, NOW(), NOW());
+    ```
+
+#### 「」
