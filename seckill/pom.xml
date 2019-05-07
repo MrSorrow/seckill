@@ -90,6 +90,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <finalName>seckill-springboot</finalName>
+        <directory>/Users/guoping/Projects/Intelljidea/seckill/seckill/</directory>
     </build>
 
 </project>

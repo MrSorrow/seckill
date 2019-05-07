@@ -127,12 +127,70 @@ CREATE TABLE miaosha_user (
 3. 秒杀倒计时刷新由前端完成，后端仅仅在查看商品详情时返回一次计算的剩余时间即可，保证所有客户端的秒杀时间能够同步，以后端为准;
 4. 具体代码参考 [<u>Commits on May 6, 2019</u>](https://github.com/MrSorrow/seckill/commits/master)
 
-### III. 压力测试
+## 三、 压测优化
 
-#### 「商品列表压力测试」
- 利用JMeter对 [http://localhost:8080/goods/list](http://localhost:8080/goods/list) 商品列表接口进行压测。
- JMeter配置参数为同时启动2000个线程，性能结果如下：
+### I. 压力测试
+利用JMeter对接口进行压测。压测文件保存在 [`preesure_test`](https://github.com/MrSorrow/seckill/blob/master/pressure_test) 文件夹下。
 
- | Label    |  样本  | 异常 % |   吞吐量   |
- | :------: | :---: | :----: | :-------: |
- | 商品列表页 | 2000 | 0.000% | 220.2 / sec |
+测试时MySQL、Redis连接池配置参数如下：
+```yaml
+# druid pool config
+druid:
+  initial-size: 100
+  max-active: 1000
+  min-idle: 500
+  max-wait: 5000
+# redis pool config
+redis:
+  timeout: 5000
+  lettuce:
+    pool:
+      max-active: 2000
+      max-idle: 200
+      max-wait: 3
+```
+
+部分接口测试性能如下：
+
+| Label    | 接口 |  线程数  | 异常 % |   吞吐量   |
+| :------: | :---: | :---: | :----: | :-------: |
+| 商品列表压力测试 | [http://localhost:8080/goods/list](http://localhost:8080/goods/list) | 2000 | 0.000% | 467.1 / sec |
+| 单用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 2000 | 0.000% | 748.5 / sec |
+| 多用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 2000 | 0.000% | 748.5 / sec |
+
+
+## 四、打包运行
+
+### I. 项目打包
+1. 将Spring Boot项目打包成Jar包，指定打包路径和打包名称;
+    ```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+        <finalName>seckill-springboot</finalName>
+        <directory>/Users/guoping/Projects/Intelljidea/seckill/seckill/</directory>
+    </build>
+    ```
+2. 编写Dockerfile构建镜像，参考[官方文档](https://spring.io/guides/topicals/spring-boot-docker);
+    ```docker
+    # 基础镜像
+    FROM java:8
+    # 挂载点为/tmp，jar包就会存在这里
+    VOLUME /tmp
+    # 拷贝打包好的jar包
+    COPY seckill-springboot.jar seckill-springboot.jar
+    # 暴露端口
+    EXPOSE 8080
+    # 容器创建后执行jar
+    ENTRYPOINT ["java","-jar","/seckill-springboot.jar"]
+    ```
+3. 构建镜像创建实例并运行服务;
+    ```bash
+    docker build -t guoping/seckill:1.0 .
+    docker run -d -p 80:8080 --name e3-mall-seckill seckill:1.0
+    ```
+4. 测试服务。
