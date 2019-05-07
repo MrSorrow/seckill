@@ -24,7 +24,7 @@ public class SecKillService {
 
     /**
      * 减少库存，下订单，写入秒杀订单
-     * 需要用事务保证原子性
+     * 需要用事务保证原子性，默认传播方式是REQUIRED，没事务创建事务，有事务延用事务
      * @param user
      * @param goods
      * @return

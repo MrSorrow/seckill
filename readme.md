@@ -6,7 +6,8 @@
 
 项目视频参考地址：[https://www.bilibili.com/video/av50818180/](https://www.bilibili.com/video/av50818180/)
 
-## 一、环境准备
+## 一、快速开始
+####「环境准备」
 1. 安装Docker;
 2. 安装MySQL的Docker环境 (注意设置容器时区和MySQL时区);
     ```bash
@@ -18,6 +19,9 @@
     docker pull redis:3.2
     docker run -d -p 6379:6379 --name e3-mall-redis redis:3.2
     ```
+#### 「导入项目」
+1. 项目采用Maven构建;
+2. 通过IDEA直接以Maven方式导入项目即可。
 
 ## 二、功能实现
 ### I. 用户模块
@@ -106,7 +110,7 @@ CREATE TABLE miaosha_user (
     ) ENGINE=INNODB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
     ```
 
-#### 「展示商品列表页」
+#### 「展示商品列表及详情」
 1. 插入商品数据：
     ```sql
     INSERT INTO goods VALUES (1, "iPhoneX", "Apple iPhone X (A1865) 64GB 深空灰色 移动联通电信4G手机", "/img/iphonex.png", "Apple iPhone X (A1865) 64GB 深空灰色 移动联通电信4G手机【五月特惠】大屏性价比iPhone7Plus4199元，iPhone8低至3499元，iPhoneXR低至4799元！更多特价、优惠券，点此查看！选移动，享大流量，不换号购机！", 5999, 100);
@@ -114,6 +118,10 @@ CREATE TABLE miaosha_user (
  
     INSERT INTO miaosha_goods VALUES (1, 1, 0.01, 4, NOW(), NOW()), (2, 2, 0.01, 9, NOW(), NOW());
     ```
-2. 通过连接普通商品表和秒杀商品表，查询出秒杀商品的全部信息。
+2. 通过连接普通商品表和秒杀商品表，查询出秒杀商品的全部信息;
+3. 将所有商品展示在 `goods_list` 中，单个商品的全部信息展示在商品详情页 `goods_detail` 中。
 
-#### 「展示商品详情页」
+#### 「下单秒杀商品」
+1. 下单秒杀商品包含减少库存、创建订单两步，需要保证两步操作的原子性;
+2. 通过Spring声明式事务，保证减少库存、创建普通订单以及创建秒杀订单三步的原子性;
+3. 秒杀倒计时刷新由前端完成，后端仅仅在查看商品详情时返回一次计算的剩余时间即可，保证所有客户端的秒杀时间能够同步，以后端为准。
