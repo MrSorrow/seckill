@@ -130,10 +130,9 @@ CREATE TABLE miaosha_user (
 ### III. 压力测试
 
 #### 「商品列表压力测试」
-利用JMeter对 [http://localhost:8080/goods/list](http://localhost:8080/goods/list) 商品列表接口进行压测。
+ 利用JMeter对 [http://localhost:8080/goods/list](http://localhost:8080/goods/list) 商品列表接口进行压测。
+ JMeter配置参数为同时启动2000个线程，性能结果如下：
 
-JMeter配置参数为同时启动2000个线程，性能结果如下：
-
-| Label    |  样本  | 异常 % |   吞吐量   |
-| :------: | :---: | :----: | :-------: |
-| 商品列表页 | 2000 | 0.000% | 220.2 / sec |
+ | Label    |  样本  | 异常 % |   吞吐量   |
+ | :------: | :---: | :----: | :-------: |
+ | 商品列表页 | 2000 | 0.000% | 220.2 / sec |
