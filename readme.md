@@ -154,9 +154,9 @@ redis:
 
 | Label    | 接口 |  线程数  | 异常 % |   吞吐量   |
 | :------: | :---: | :---: | :----: | :-------: |
-| 商品列表压力测试 | [http://localhost:8080/goods/list](http://localhost:8080/goods/list) | 2000 | 0.000% | 467.1 / sec |
-| 单用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 2000 | 0.000% | 748.5 / sec |
-| 多用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 2000 | 0.000% | 748.5 / sec |
+| 商品列表压力测试 | [http://localhost:8080/goods/list](http://localhost:8080/goods/list) | 5000*1 | 0.000% | 467.1 / sec |
+| 用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 5000*1 | 0.000% | 996.9 / sec |
+| 多用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 5000*1 | 0.000% | 748.5 / sec |
 
 
 ## 四、打包运行
@@ -191,6 +191,6 @@ redis:
 3. 构建镜像创建实例并运行服务;
     ```bash
     docker build -t guoping/seckill:1.0 .
-    docker run -d -p 80:8080 --name e3-mall-seckill seckill:1.0
+    docker run -d -p 80:8080 --name e3-mall-seckill guoping/seckill:1.0
     ```
 4. 测试服务。
