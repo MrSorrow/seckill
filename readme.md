@@ -150,6 +150,12 @@ redis:
       max-wait: 3
 ```
 
+由于设置的数据库连接池连接数量较大，需要对Docker-MySQL的最大连接数进行设置：
+```sql
+set GLOBAL max_connections=2000;
+set GLOBAL max_user_connections=1500;
+```
+
 未采取任何优化措施前，部分核心接口测试性能如下：
 
 | 压测接口    | 接口地址 |  线程数*循环次数  | 异常 % |   吞吐量   |
@@ -159,18 +165,90 @@ redis:
 | 多用户秒杀接口压测 | [http://localhost:8080/seckill/kill](http://localhost:8080/seckill/kill) | 5000*1 | 0.000% | 289.8 / sec |
 
 ### II. 性能优化
-系统性能瓶颈在于MySQL的读写性能，所以主要利用缓存技术减少对数据库层面的访问。
-页面优化技术包括：
+系统性能瓶颈在于MySQL的读写性能，所以主要利用各种技术减少对数据库层面的访问。
+
+从缓存实现性能优化角度，用户的请求首先经过CDN优化，然后经过Nginx服务器缓存，再进入应用程序实现的页面级缓存，然后经过对象级缓存，最后可能经过数据库缓存。前面的层层缓存使得用户请求读写数据库的压力减小很多。
+页面缓存优化技术包括：
 1. 页面缓存+URL缓存+对象缓存
 2. 页面静态化，前后端分离
 3. 静态资源优化
 4. CDN优化
 
+以上是否通用接口的优化方式，针对秒杀场景，较短时间内大量的秒杀请求访问系统，根据其读多写少的业务特性，一旦商品秒杀结束，后续的秒杀请求一律返回秒杀失败即可，无需再访问缓存或数据库。
+秒杀接口优化策略包括：
+1. Redis预减库存减少数据库的访问
+2. 通过内存标记减少Redis访问
+3. 请求先进入消息队列进行缓冲削峰，异步下单，增强用户体验
+
+其他提高系统并发能力的策略主要就是服务的水平复制与垂直拆分，构建分布式集群应用，通过多个节点分担压力，负载均衡等。
+
 #### 「模板引擎页面缓存」
+1. 页面缓存主要是指 `Controller` 方法返回的不再是包含数据的 `Json`，而是直接返回最终的HTML页面;
+2. 通过页面模板引擎将 `Service` 层得到的数据直接手动渲染页面，将整个页面缓存至Redis中; 
+3. 缓存的过期时间可以设定较短，保证用户看到的数据不至于过旧。
+
+#### 「模板引擎URL缓存」
+1. URL缓存主要是指针对不同的请求URL，缓存对应的HTML页面，基本和页面缓存相似;
+2. 通过以不同的URL为缓存的键来存储不同的页面;
+3. 同样缓存的淘汰策略也是自动过期。
+
+#### 「对象缓存」
+1. 对象缓存主要是指将 `Service` 层得到的数据存入Redis中，这样每次请求先进行缓存查询，如果命中则直接返回;
+2. 对象缓存一般没有变化则常驻于缓存，或设置较久的过期时间。数据在更新时，需要对缓存进行处理，往往先更新数据库，再删除缓存。
+
+#### 「页面静态化」
+1. 主要针对商品详情页，可以采取页面静态化的方式，直接生成静态HTML页面，保存在本地，额外用高性能HTTP服务器进行访问;
+2. 页面静态化方式可以使得前后端分离，一种方式是后端只提供RESTful API接口，前端编写半静态页面，通过Ajax获取数据再进行页面填充;
+3. 另一种页面静态化方式可以直接在添加商品时，利用页面模板引擎生成完全静态的商品详情网页，如果数据更改再重新生成新的页面。
+
+#### 「浏览器缓存」
+通过浏览器端的缓存，可以降低对服务器的访问次数。Spring Boot对于静态资源的浏览器缓存相关配置如下：
+```properties
+# SPRING RESOURCES HANDLING (ResourceProperties)
+spring.resources.add-mappings=true # Whether to enable default resource handling.
+spring.resources.cache.cachecontrol.cache-private= # Indicate that the response message is intended for a single user and must not be stored by a shared cache.
+spring.resources.cache.cachecontrol.cache-public= # Indicate that any cache may store the response.
+spring.resources.cache.cachecontrol.max-age= # Maximum time the response should be cached, in seconds if no duration suffix is not specified.
+spring.resources.cache.cachecontrol.must-revalidate= # Indicate that once it has become stale, a cache must not use the response without re-validating it with the server.
+spring.resources.cache.cachecontrol.no-cache= # Indicate that the cached response can be reused only if re-validated with the server.
+spring.resources.cache.cachecontrol.no-store= # Indicate to not cache the response in any case.
+spring.resources.cache.cachecontrol.no-transform= # Indicate intermediaries (caches and others) that they should not transform the response content.
+spring.resources.cache.cachecontrol.proxy-revalidate= # Same meaning as the "must-revalidate" directive, except that it does not apply to private caches.
+spring.resources.cache.cachecontrol.s-max-age= # Maximum time the response should be cached by shared caches, in seconds if no duration suffix is not specified.
+spring.resources.cache.cachecontrol.stale-if-error= # Maximum time the response may be used when errors are encountered, in seconds if no duration suffix is not specified.
+spring.resources.cache.cachecontrol.stale-while-revalidate= # Maximum time the response can be served after it becomes stale, in seconds if no duration suffix is not specified.
+spring.resources.cache.period= # Cache period for the resources served by the resource handler. If a duration suffix is not specified, seconds will be used.
+spring.resources.chain.cache=true # Whether to enable caching in the Resource chain.
+spring.resources.chain.compressed=false # Whether to enable resolution of already compressed resources (gzip, brotli).
+spring.resources.chain.enabled= # Whether to enable the Spring Resource Handling chain. By default, disabled unless at least one strategy has been enabled.
+spring.resources.chain.html-application-cache=false # Whether to enable HTML5 application cache manifest rewriting.
+spring.resources.chain.strategy.content.enabled=false # Whether to enable the content Version Strategy.
+spring.resources.chain.strategy.content.paths=/** # Comma-separated list of patterns to apply to the content Version Strategy.
+spring.resources.chain.strategy.fixed.enabled=false # Whether to enable the fixed Version Strategy.
+spring.resources.chain.strategy.fixed.paths=/** # Comma-separated list of patterns to apply to the fixed Version Strategy.
+spring.resources.chain.strategy.fixed.version= # Version string to use for the fixed Version Strategy.
+spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/ # 静态资源路径
+```
+
+#### 「静态资源优化」
+1. 对JS/CSS文件压缩，减少流量;
+2. 多个JS/CSS进行组合为一个文件，减少请求资源时建立的TCP连接数;
+3. 利用WebPack可以进行前端资源打包。
+
+#### 「CDN就近访问优化」
+1. CDN：内容分发网络(Content Delivery Network)，CDN系统能够实时的根据网络流量和各节点的连接、负载情况选择从最近的节点将数据返回给用户;
+2. 购买现有的如阿里云CDN，腾讯CDN，百度CDN等等服务。
+
+#### 「消息队列削峰」
+
+### III. 安全优化
+
+#### 「隐藏秒杀接口」
+
+#### 「接口限流防刷」
 
 
-
-## 四、打包运行
+## 四、打包部署
 
 ### I. 项目打包
 1. 将Spring Boot项目打包成Jar包，指定打包路径和打包名称;
