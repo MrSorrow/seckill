@@ -1,7 +1,6 @@
 package guo.ping.seckill.service;
 
 import guo.ping.seckill.dao.GoodsDao;
-import guo.ping.seckill.domain.Goods;
 import guo.ping.seckill.domain.SecKillGoods;
 import guo.ping.seckill.vo.GoodsVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +39,12 @@ public class GoodsService {
     }
 
     /**
-     * 减小库存
+     * 减小库存，这里不需要更新库存，库存的正确更改依靠SQL实现
      * @param goods 对goods进行的库存进行更新
      */
-    public void reduceStock(GoodsVO goods) {
+    public int reduceStock(GoodsVO goods) {
         SecKillGoods g = new SecKillGoods();
-        g.setId(goods.getId());
-        g.setStockCount(goods.getStockCount() - 1);
-        goodsDao.updateStock(g);
+        g.setGoodsId(goods.getId());
+        return goodsDao.updateStock(g);
     }
 }

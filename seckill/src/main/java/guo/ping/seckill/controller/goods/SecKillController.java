@@ -55,9 +55,14 @@ public class SecKillController {
         // 正常进入秒杀流程：1.减少库存，2.创建订单，3-写入秒杀订单 三步需要原子操作
         OrderInfo orderInfo = secKillService.secKill(user, goods);
 
-        // 进入订单详情页
-        model.addAttribute("orderInfo", orderInfo);
-        model.addAttribute("goods", goods);
-        return "order_detail";
+        if (orderInfo != null) {
+            // 进入订单详情页
+            model.addAttribute("orderInfo", orderInfo);
+            model.addAttribute("goods", goods);
+            return "order_detail";
+        } else {
+            model.addAttribute("errorMsg", CodeMsg.SECKILL_OVER.getMsg());
+            return "kill_fail";
+        }
     }
 }

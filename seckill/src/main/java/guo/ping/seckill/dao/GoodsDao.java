@@ -36,10 +36,10 @@ public interface GoodsDao {
     GoodsVO getGoodsDetailById(@Param("goodsId") Long goodsId);
 
     /**
-     * 更新库存
+     * 更新库存，解决商品超卖问题的关键所在
      * @param g
      * @return
      */
-    @Update("UPDATE miaosha_goods SET stock_count = #{stockCount} WHERE goods_id = #{goodsId}")
+    @Update("UPDATE miaosha_goods SET stock_count = stock_count - 1 WHERE goods_id = #{goodsId} AND stock_count > 0")
     int updateStock(SecKillGoods g);
 }
