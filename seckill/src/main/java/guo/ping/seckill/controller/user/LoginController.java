@@ -1,5 +1,6 @@
 package guo.ping.seckill.controller.user;
 
+import guo.ping.seckill.domain.User;
 import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.result.ServerResponse;
 import guo.ping.seckill.service.UserService;
@@ -37,14 +38,23 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public ServerResponse<Boolean> doLogin(HttpServletResponse response, @Valid LoginInfoVo loginInfoVo) {
+    public ServerResponse<String> doLogin(HttpServletResponse response, @Valid LoginInfoVo loginInfoVo) {
         // 打印用户输入信息日志
         logger.info(loginInfoVo.toString());
         // 登录，出错会抛出全局异常，并被捕获处理
-        userService.login(response, loginInfoVo);
+        String token = userService.login(response, loginInfoVo);
         // 直接返回true即可
-        return ServerResponse.success(true);
+        return ServerResponse.success(token);
     }
 
-
+    /**
+     * 根据Token获取用户信息
+     * @param user
+     * @return
+     */
+    @RequestMapping("/info")
+    @ResponseBody
+    public ServerResponse<User> userInfo(User user) {
+        return ServerResponse.success(user);
+    }
 }

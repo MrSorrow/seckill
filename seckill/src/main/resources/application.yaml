@@ -16,10 +16,10 @@ spring:
       username: root # 或spring.datasource.username=
       password: 1234 # 或spring.datasource.password=
       driver-class-name: com.mysql.cj.jdbc.Driver #或 spring.datasource.driver-class-name=
-      initial-size: 1
-      max-active: 2
-      min-idle: 1
-      max-wait: 60000
+      initial-size: 100
+      max-active: 1000
+      min-idle: 500
+      max-wait: 5000
       pool-prepared-statements: true
       max-open-prepared-statements: 20
       validation-query: select 'x'
@@ -30,15 +30,15 @@ spring:
       min-evictable-idle-time-millis: 300000
       filters: stat #配置多个英文逗号分隔
 
-  # config redis and fastjson ()
+  # config redis
   redis:
     host: 192.168.2.113
     port: 6379
     timeout: 5000
     lettuce:
       pool:
-        max-active: 8
-        max-idle: 8
+        max-active: 2000
+        max-idle: 200
         max-wait: 3
 
 # config mybatis (http://www.mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/index.html)

@@ -150,13 +150,24 @@ redis:
       max-wait: 3
 ```
 
-部分接口测试性能如下：
+未采取任何优化措施前，部分核心接口测试性能如下：
 
-| Label    | 接口 |  线程数  | 异常 % |   吞吐量   |
-| :------: | :---: | :---: | :----: | :-------: |
-| 商品列表压力测试 | [http://localhost:8080/goods/list](http://localhost:8080/goods/list) | 5000*1 | 0.000% | 467.1 / sec |
-| 用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 5000*1 | 0.000% | 996.9 / sec |
-| 多用户信息压力测试 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 5000*1 | 0.000% | 748.5 / sec |
+| 压测接口    | 接口地址 |  线程数*循环次数  | 异常 % |   吞吐量   |
+| :--------: | :-----: | :-------------: | :----: | :-------: |
+| 商品列表接口压测 | [http://localhost:8080/goods/list](http://localhost:8080/goods/list) | 5000*1 | 0.000% | 467.1 / sec |
+| 单用户信息查询压测 | [http://localhost:8080/user/info](http://localhost:8080/user/info) | 5000*1 | 0.000% | 996.9 / sec |
+| 多用户秒杀接口压测 | [http://localhost:8080/seckill/kill](http://localhost:8080/seckill/kill) | 5000*1 | 0.000% | 289.8 / sec |
+
+### II. 性能优化
+系统性能瓶颈在于MySQL的读写性能，所以主要利用缓存技术减少对数据库层面的访问。
+页面优化技术包括：
+1. 页面缓存+URL缓存+对象缓存
+2. 页面静态化，前后端分离
+3. 静态资源优化
+4. CDN优化
+
+#### 「模板引擎页面缓存」
+
 
 
 ## 四、打包运行

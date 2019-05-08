@@ -44,7 +44,7 @@ public class UserService {
      * @param loginInfoVo
      * @return
      */
-    public CodeMsg login(HttpServletResponse response, LoginInfoVo loginInfoVo) {
+    public String login(HttpServletResponse response, LoginInfoVo loginInfoVo) {
         if (loginInfoVo == null) {
             throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
@@ -65,17 +65,17 @@ public class UserService {
         }
 
         // 用户输入信息正确后，在Redis中保存Session信息，浏览器保存Cookie
-        addCookie(response, user);
+        String token = addCookie(response, user);
 
-        return CodeMsg.SUCCESS;
+        return token;
     }
 
     /**
-     * 在Redis中保存Session信息，浏览器保存Cookie
+     * 在Redis中保存Session信息，浏览器保存Cookie，返回Token
      * @param response
      * @param user
      */
-    private void addCookie(HttpServletResponse response, User user) {
+    private String addCookie(HttpServletResponse response, User user) {
         String token = UUIDUtil.uuid();
         String key = UserKey.userKey.getPrefix() + ":" + token;
         int expire = UserKey.userKey.expireSeconds();
@@ -86,6 +86,7 @@ public class UserService {
         cookie.setMaxAge(expire);
         cookie.setPath("/");
         response.addCookie(cookie);
+        return token;
     }
 
     /**
