@@ -63,7 +63,6 @@ public class SecKillService {
      * @return
      */
     public Long getSecKillResult(Long userId, Long goodsId) {
-        // TODO: 需要将订单缓存到Redis中，这样查询效率更高，减少数据库访问开销
         SecKillOrder order = orderService.getSecKillOrderByUserIdAndGoodsId(userId, goodsId);
         if (order != null) {
             // 秒杀成功

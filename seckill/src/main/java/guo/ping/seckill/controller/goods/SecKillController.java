@@ -118,7 +118,6 @@ public class SecKillController implements InitializingBean {
         }
 
         // 判断是否已经秒杀到商品，防止一人多次秒杀成功
-        // TODO: 需要将订单缓存到Redis中，这样查询效率更高，减少数据库访问开销
         SecKillOrder order = orderService.getSecKillOrderByUserIdAndGoodsId(user.getId(), goodsId);
         if (order != null) {
             model.addAttribute("errorMsg", CodeMsg.SECKILL_REPEAT.getMsg());
