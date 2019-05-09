@@ -53,12 +53,12 @@ public class OrderService {
         orderInfo.setOrderChannel(1);
         orderInfo.setStatus(0);
         orderInfo.setUserId(user.getId());
-        Long orderId = orderDao.insertOrderInfo(orderInfo);
+        orderDao.insertOrderInfo(orderInfo);
 
         // 插入秒杀订单记录
         SecKillOrder secKillOrder = new SecKillOrder();
         secKillOrder.setGoodsId(goods.getId());
-        secKillOrder.setOrderId(orderId);
+        secKillOrder.setOrderId(orderInfo.getId());
         secKillOrder.setUserId(user.getId());
         orderDao.insertSecKillOrder(secKillOrder);
 

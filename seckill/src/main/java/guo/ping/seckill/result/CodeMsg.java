@@ -42,6 +42,7 @@ public class CodeMsg {
      */
     public static final CodeMsg SECKILL_OVER = new CodeMsg(500501,"秒杀结束");
     public static final CodeMsg SECKILL_REPEAT = new CodeMsg(500502, "不能重复秒杀");
+    public static final CodeMsg SECKILL_WAITTING = new CodeMsg(500503, "秒杀排队中");
 
     private int code;
     private String msg;
