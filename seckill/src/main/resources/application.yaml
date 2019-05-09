@@ -41,6 +41,28 @@ spring:
         max-idle: 200
         max-wait: 3
 
+  # config rabbitmq
+  rabbitmq:
+    host: 192.168.2.113
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: mq_vhost  # docker容器中配置的名称
+    listener:
+      simple:
+        concurrency: 10  # 最小的消费者线程数量
+        max-concurrency: 10  # 最大的消费者线程数量
+        prefetch: 1  # 每个消费者最多取几个消息出队
+        auto-startup: true  # 是否启动时启动容器
+        default-requeue-rejected: true  # 消费失败重新进队
+    template:
+      retry:
+        enabled: true  # 生产者入队是否重试
+        initial-interval: 1000  # Duration between the first and second attempt to deliver a message.
+        max-attempts: 3
+        max-interval: 10000
+        multiplier: 1.0
+
 # config mybatis (http://www.mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/index.html)
 mybatis:
     type-aliases-package: guo.ping.seckill.domainn

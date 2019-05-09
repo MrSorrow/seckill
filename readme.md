@@ -19,6 +19,11 @@
     docker pull redis:3.2
     docker run -d -p 6379:6379 --name e3-mall-redis redis:3.2
     ```
+4. 安装RabbitMQ的Docker环境;
+    ```bash
+    docker pull rabbitmq:3.7-management
+    docker run -d --name e3-mall-rabbitmq -p 5672:5672 -p 15672:15672 --hostname e3-mall-rabbitmq -e RABBITMQ_DEFAULT_VHOST=mq_vhost  -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin rabbitmq:3.7-management
+    ```
 #### 「导入项目」
 1. 项目采用Maven构建;
 2. 通过IDEA直接以Maven方式导入项目即可。
@@ -240,6 +245,11 @@ spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/reso
 2. 购买现有的如阿里云CDN，腾讯CDN，百度CDN等等服务。
 
 #### 「消息队列削峰」
+1. 系统初始化，把商品库存数量加载到Redis中;
+2. 当用户进行秒杀请求时，Redis预减库存，如果库存不足，可以直接返回商品秒杀完成;
+3. 如果还有库存，则用户所有的秒杀请求全部进入消息队列，页面先显示排队中;
+4. 秒杀请求出队，减少库存并生成秒杀订单;
+5. 客户端则需要不断轮询是否秒杀成功。
 
 ### III. 安全优化
 

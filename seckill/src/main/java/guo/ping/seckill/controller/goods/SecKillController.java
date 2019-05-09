@@ -3,7 +3,9 @@ package guo.ping.seckill.controller.goods;
 import guo.ping.seckill.domain.OrderInfo;
 import guo.ping.seckill.domain.SecKillOrder;
 import guo.ping.seckill.domain.User;
+import guo.ping.seckill.mq.MQSender;
 import guo.ping.seckill.result.CodeMsg;
+import guo.ping.seckill.result.ServerResponse;
 import guo.ping.seckill.service.GoodsService;
 import guo.ping.seckill.service.OrderService;
 import guo.ping.seckill.service.SecKillService;
@@ -13,6 +15,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Date;
 
 /**
  * @description: 秒杀商品Controller
@@ -31,6 +36,8 @@ public class SecKillController {
     private OrderService orderService;
     @Autowired
     private SecKillService secKillService;
+    @Autowired
+    private MQSender mqSender;
 
     @RequestMapping("/kill")
     public String secKill(Model model, User user, @RequestParam("goodsId") Long goodsId) {
@@ -64,5 +71,15 @@ public class SecKillController {
             model.addAttribute("errorMsg", CodeMsg.SECKILL_OVER.getMsg());
             return "kill_fail";
         }
+    }
+
+    @RequestMapping("/asynckill")
+    @ResponseBody
+    public ServerResponse<String> asyncSecKill() {
+        User user = new User();
+        user.setNickname("hhaha");
+        user.setRegisterDate(new Date());
+        mqSender.sendMessage(user);
+        return ServerResponse.success("test async seckill");
     }
 }
