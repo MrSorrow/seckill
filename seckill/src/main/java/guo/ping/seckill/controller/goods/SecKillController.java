@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -49,6 +50,12 @@ public class SecKillController implements InitializingBean {
     private MQSender mqSender;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * 内存标记Map，key为商品id，value为是否秒杀结束，用于减少对Redis的访问
+     * 该内存标记非线程安全，但不会影响功能，只是有多个线程多次复写某商品卖完
+     */
+    private HashMap<Long, Boolean> goodsSecKillOverMap = new HashMap<>();
 
     @RequestMapping("/kill")
     public String secKill(Model model, User user, @RequestParam("goodsId") Long goodsId) {
@@ -92,11 +99,20 @@ public class SecKillController implements InitializingBean {
         }
         model.addAttribute("user", user);
 
+        // 先访问内存标记，查看是否卖完
+        if (goodsSecKillOverMap.containsKey(goodsId) && goodsSecKillOverMap.get(goodsId)) {
+            model.addAttribute("errorMsg", CodeMsg.SECKILL_OVER.getMsg());
+            return "kill_fail";
+        }
+
         // Redis预减库存
         Long nowStock = redisTemplate.opsForValue().decrement(GoodsKey.goodsStockKey.getPrefix() + ":" + goodsId);
         logger.info("商品" + goodsId + "预减库存完Redis当前库存数量为：" + nowStock);
+
         // 如果库存预减完毕，则直接返回秒杀失败
         if (nowStock < 0) {
+            // 记录当前商品秒杀完毕
+            goodsSecKillOverMap.put(goodsId, true);
             model.addAttribute("errorMsg", CodeMsg.SECKILL_OVER.getMsg());
             return "kill_fail";
         }
