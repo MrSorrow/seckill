@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @date: 2019/5/3 7:03 PM
  * @project: seckill
  */
-public class LoginInfoVo {
+public class LoginInfoVO {
 
     @NotNull
     @IsMobile
@@ -39,7 +39,7 @@ public class LoginInfoVo {
 
     @Override
     public String toString() {
-        return "LoginInfoVo{" +
+        return "LoginInfoVO{" +
                 "mobile='" + mobile + '\'' +
                 ", password='" + password + '\'' +
                 '}';

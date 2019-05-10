@@ -1,5 +1,6 @@
 package guo.ping.seckill.controller.goods;
 
+import guo.ping.seckill.annotation.AccessLimit;
 import guo.ping.seckill.domain.User;
 import guo.ping.seckill.service.GoodsService;
 import guo.ping.seckill.service.UserService;
@@ -35,6 +36,7 @@ public class GoodsController {
      * @return
      */
     @RequestMapping("/list")
+    @AccessLimit(seconds = 10, maxValue = 5)
     public String goodsList(Model model, User user) {
         model.addAttribute("user", user);
         List<GoodsVO> goods = goodsService.getGoodsVOs();

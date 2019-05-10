@@ -7,7 +7,7 @@ import guo.ping.seckill.redis.UserKey;
 import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.utils.MD5Util;
 import guo.ping.seckill.utils.UUIDUtil;
-import guo.ping.seckill.vo.LoginInfoVo;
+import guo.ping.seckill.vo.LoginInfoVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -41,16 +41,16 @@ public class UserService {
 
     /**
      * 登录服务，包含第二次MD5加密的逻辑
-     * @param loginInfoVo
+     * @param loginInfoVO
      * @return
      */
-    public String login(HttpServletResponse response, LoginInfoVo loginInfoVo) {
-        if (loginInfoVo == null) {
+    public String login(HttpServletResponse response, LoginInfoVO loginInfoVO) {
+        if (loginInfoVO == null) {
             throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
 
-        String mobile = loginInfoVo.getMobile();
-        String formPassword = loginInfoVo.getPassword();
+        String mobile = loginInfoVO.getMobile();
+        String formPassword = loginInfoVO.getPassword();
 
         User user = userDao.getUserById(Long.parseLong(mobile));
         if (user == null) {

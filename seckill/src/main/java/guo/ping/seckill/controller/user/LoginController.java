@@ -1,10 +1,9 @@
 package guo.ping.seckill.controller.user;
 
 import guo.ping.seckill.domain.User;
-import guo.ping.seckill.result.CodeMsg;
 import guo.ping.seckill.result.ServerResponse;
 import guo.ping.seckill.service.UserService;
-import guo.ping.seckill.vo.LoginInfoVo;
+import guo.ping.seckill.vo.LoginInfoVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +37,11 @@ public class LoginController {
 
     @RequestMapping("/do_login")
     @ResponseBody
-    public ServerResponse<String> doLogin(HttpServletResponse response, @Valid LoginInfoVo loginInfoVo) {
+    public ServerResponse<String> doLogin(HttpServletResponse response, @Valid LoginInfoVO loginInfoVO) {
         // 打印用户输入信息日志
-        logger.info(loginInfoVo.toString());
+        logger.info(loginInfoVO.toString());
         // 登录，出错会抛出全局异常，并被捕获处理
-        String token = userService.login(response, loginInfoVo);
+        String token = userService.login(response, loginInfoVO);
         // 直接返回true即可
         return ServerResponse.success(token);
     }
