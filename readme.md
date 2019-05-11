@@ -5,6 +5,7 @@
 本项目实现了电商项目的秒杀功能，主要内容包含了用户登录、浏览商品、秒杀抢购、创建订单等功能，着重解决秒杀系统的并发问题。项目利用JMeter工具进行压力测试，着重对比采用缓存、消息队列等手段对于提高系统响应速度并发能力的效果。
 
 项目参考博客地址：[https://wangguoping.blog.csdn.net/article/details/89923044](https://wangguoping.blog.csdn.net/article/details/89923044)
+
 项目视频参考地址：[https://www.bilibili.com/video/av50818180/](https://www.bilibili.com/video/av50818180/)
 
 ## 一、快速开始
