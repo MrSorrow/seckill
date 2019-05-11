@@ -92,7 +92,6 @@ public class SecKillController implements InitializingBean {
     }
 
     @RequestMapping("/asynckill")
-    @ResponseBody
     public String asyncSecKill(Model model, User user, @RequestParam("goodsId") Long goodsId) {
         if (user == null) {
             return "login";

@@ -17,12 +17,12 @@
 3. 安装Redis的Docker环境;
     ```bash
     docker pull redis:3.2
-    docker run -d -p 6379:6379 --name e3-mall-redis redis:3.2
+    docker run -d -p 6379:6379 --name e3-mall-redis -e TZ=Asia/Shanghai redis:3.2
     ```
 4. 安装RabbitMQ的Docker环境;
     ```bash
     docker pull rabbitmq:3.7-management
-    docker run -d --name e3-mall-rabbitmq -p 5672:5672 -p 15672:15672 --hostname e3-mall-rabbitmq -e RABBITMQ_DEFAULT_VHOST=mq_vhost  -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin rabbitmq:3.7-management
+    docker run -d --name e3-mall-rabbitmq -p 5672:5672 -p 15672:15672 --hostname e3-mall-rabbitmq -e RABBITMQ_DEFAULT_VHOST=mq_vhost  -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=admin -e TZ=Asia/Shanghai rabbitmq:3.7-management
     ```
 #### 「导入项目」
 1. 项目采用Maven构建;
@@ -302,12 +302,18 @@ spring.resources.static-locations=classpath:/META-INF/resources/,classpath:/reso
 ### II. 水平复制
 1. 启动3个实例，分别端口映射到宿主机的8081、8082、8083，打开宿主机防火墙;
 ```bash
-docker run -d -p 8081:8080 --name e3-mall-seckill-1 guoping/seckill:1.0
-docker run -d -p 8082:8080 --name e3-mall-seckill-2 guoping/seckill:1.0
-docker run -d -p 8083:8080 --name e3-mall-seckill-3 guoping/seckill:1.0
+docker run -d -p 8081:8080 --name e3-mall-seckill-1 -e TZ=Asia/Shanghai guoping/seckill:1.0
+docker run -d -p 8082:8080 --name e3-mall-seckill-2 -e TZ=Asia/Shanghai guoping/seckill:1.0
+docker run -d -p 8083:8080 --name e3-mall-seckill-3 -e TZ=Asia/Shanghai guoping/seckill:1.0
 ```
 2. 利用Nginx进行反向代理，宿主机上传好 `nginx.conf` 配置文件，其中配置好多节点负载均衡;
 ```bash
+events {
+    worker_connections  6000;
+}
+
+.......
+
 upstream e3-mall-seckill-servers {
     server 192.168.2.113:8081 weight=1;
     server 192.168.2.113:8082 weight=1;
@@ -327,5 +333,5 @@ server {
 3. 下载Nginx镜像，创建实例反向代理Nginx服务器。
 ```bash
 docker pull nginx
-docker run --name e3-mall-nginx -v /root/nginx.conf:/etc/nginx/nginx.conf:ro -p 80:80 -d nginx
+docker run --name e3-mall-nginx -v /root/nginx.conf:/etc/nginx/nginx.conf:ro -p 80:80 -d -e TZ=Asia/Shanghai nginx
 ```
